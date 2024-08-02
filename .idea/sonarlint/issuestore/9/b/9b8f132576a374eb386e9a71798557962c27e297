@@ -1,0 +1,19 @@
+
+µ
+java:S1319"mThe return type of this method should be an interface such as "Map" rather than the implementation "HashMap".(àØá±ûÿÿÿÿ8ÿ¡Ê”‘2J$06ac32e4-fcbf-4c46-bb1a-c34e2f6eb4a3
+µ
+java:S1319"mThe return type of this method should be an interface such as "Map" rather than the implementation "HashMap".(·¬èÿÿÿÿÿ8ÿ¡Ê”‘2J$2172ed81-7bce-4b4f-b6f4-4d5f24c45d61
+µ
+java:S1319"mThe return type of this method should be an interface such as "Map" rather than the implementation "HashMap".(¦ıçíùÿÿÿÿ8ÿ¡Ê”‘2J$2bc4f775-bce2-44e9-b330-b1edeebffeca
+Í
+java:S1862/"„This branch can not be reached because the condition duplicates a previous condition in the same sequence of "if/else if" statements(ã‰üÿÿÿÿ8ÿ¡Ê”‘2J$def023f6-4c8d-44c1-ace6-af56fe92407a
+d
+java:S1116"Remove this empty statement.(Åñ­õşÿÿÿÿ8Í¢Ê”‘2J$f68339d8-8da3-441c-b713-1a6bb248041e
+d
+java:S1116"Remove this empty statement.(Åñ­õşÿÿÿÿ8Í¢Ê”‘2J$e1426d04-c0ca-4248-8fda-0a1a4061f546
+d
+java:S1116"Remove this empty statement.(Åñ­õşÿÿÿÿ8Í¢Ê”‘2J$6af2f3a8-a0d0-4959-a9e4-6df7582495b7
+n
+java:S1168l"+Return an empty collection instead of null.(ÎÍëÍ8Ì®ô”‘2J$5619757e-6a78-450a-8589-69ef605188ac
+}
+java:S1117|"5Rename "id" which hides the field declared at line 9.(‚¾çıúÿÿÿÿ8Ü¢Ê”‘2J$e341b769-9e50-44e0-80a2-a22640369237

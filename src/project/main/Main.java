@@ -1,3 +1,11 @@
+package project.main;
+
+import project.manager.TaskManager;
+import project.task.Epic;
+import project.task.Subtask;
+import project.task.Task;
+import project.status.Status;
+
 public class Main {
 
     public static void main(String[] args) {

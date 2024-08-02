@@ -1,6 +1,8 @@
+package project.task;
+import project.status.Status;
+
 public class Subtask extends Task {
     private int epicID;
-
 
     public Subtask(int id, String name, String description, Status status, int epicID) {
         super(id, name, description, status);

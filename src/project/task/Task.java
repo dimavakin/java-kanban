@@ -1,3 +1,5 @@
+package project.task;
+import project.status.Status;
 import java.util.Objects;
 
 public class Task {
@@ -16,7 +18,6 @@ public class Task {
     public Task(int id, String name, String description) {
         this.name = name;
         this.description = description;
-        this.status = status;
         this.id = id;
         status = Status.NEW;
     }
@@ -25,13 +26,19 @@ public class Task {
         return id;
     }
 
+    public Status getStatus() {
+        return status;
+    }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "tasks.Task{" +
                 "id=" + id +
-                ", status=" + status +
+                ", project.status=" + status +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 '}';
@@ -50,11 +57,5 @@ public class Task {
         return Objects.hash(id, status, name, description);
     }
 
-    public Status getStatus() {
-        return status;
-    }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 }
