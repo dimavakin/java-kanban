@@ -1,6 +1,6 @@
 package project.main;
 
-import project.manager.TaskManager;
+import project.manager.InMemoryTaskManager;
 import project.task.Epic;
 import project.task.Subtask;
 import project.task.Task;
@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
-        TaskManager taskManager = new TaskManager();
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
         Task task1 = new Task(taskManager.getId(), "Поставить чайник", "Нужно поставить чайник в 17:00", Status.NEW);
         taskManager.createTask(task1);
