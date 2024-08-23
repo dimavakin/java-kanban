@@ -14,28 +14,20 @@ public interface TaskManager {
 
     Map<Integer, Subtask> getSubtasks();
 
-
-
-    //Удаление всех задач.
     void deleteAll();
 
-    //Получение по id
-    Task getOneTask(int id);
+    Task getTaskById(int id);
 
-    //Создание
     void createTask(Task task);
 
     void createEpic(Epic epic);
 
     void createSubtask(Subtask subtask);
 
-    // Обновление
     void updateTask(int id, Task task);
 
-    //Удаление по id
     void deleteTaskById(int id);
 
-    //Получение списка всех подзадач определённого эпика.
     List<Subtask> getSubtasksByEpicId(int id);
 
     int getId();
