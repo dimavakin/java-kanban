@@ -51,22 +51,24 @@ class InMemoryHistoryManagerTest {
         HistoryManager historyManager = Managers.getDefaultHistory();
         assertNotNull(historyManager);
     }
-//    @Test
-//    public void testRemoveTaskFromMiddle(){
-//        historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
-//        historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
-//        historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));
-//
-//        historyManager.remove(1);
-//        final List<Task> history = historyManager.getHistory();
-//
-//        assertEquals(2, history.size(), "История не обновилась.");
-//        assertEquals(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW), history.get(0), "Первый элемент в истории не совпадает.");
-//        assertEquals(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW), history.get(1), "Третий элемент в истории не совпадает.");
-//
-//    }
+
     @Test
-    public void testRemoveFirstTask(){
+    public void testRemoveTaskFromMiddle() {
+        historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
+        historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
+        historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));
+
+        historyManager.remove(1);
+        final List<Task> history = historyManager.getHistory();
+
+        assertEquals(2, history.size(), "История не обновилась.");
+        assertEquals(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW), history.get(0), "Первый элемент в истории не совпадает.");
+        assertEquals(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW), history.get(1), "Третий элемент в истории не совпадает.");
+
+    }
+
+    @Test
+    public void testRemoveFirstTask() {
         historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
         historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
         historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));
@@ -81,7 +83,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testRemoveLastTask(){
+    public void testRemoveLastTask() {
         historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
         historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
         historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));

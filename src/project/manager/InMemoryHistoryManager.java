@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private Map<Integer,Node> historyHashMap = new HashMap<>();
+    private Map<Integer, Node> historyHashMap = new HashMap<>();
     private Node first;
     private Node last;
 
@@ -19,39 +19,39 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public void add(Task task) {
-        if(last==null){
+        if (last == null) {
             Node node = new Node();
             node.values = task;
             first = node;
             last = node;
-            historyHashMap.put(task.getId(),node);
-        }else if(!historyHashMap.containsKey(task.getId())){
+            historyHashMap.put(task.getId(), node);
+        } else if (!historyHashMap.containsKey(task.getId())) {
             Node node = new Node();
             node.values = task;
             node.previous = last;
             historyHashMap.get(last.values.getId()).next = node;
             last = node;
             historyHashMap.put(task.getId(), node);
-        }else {
+        } else {
             historyHashMap.get(task.getId()).previous.next = historyHashMap.get(task.getId()).next;
             historyHashMap.get(task.getId()).next.previous = historyHashMap.get(task.getId()).previous;
             historyHashMap.get(task.getId()).previous = last;
-            last =  historyHashMap.get(task.getId());
+            last = historyHashMap.get(task.getId());
             historyHashMap.get(task.getId()).next = null;
         }
     }
 
     @Override
     public void remove(int id) {
-        if(historyHashMap.containsKey(id)){
-            if(!historyHashMap.get(id).equals(first)){
+        if (historyHashMap.containsKey(id)) {
+            if (!historyHashMap.get(id).equals(first)) {
                 historyHashMap.get(id).previous.next = historyHashMap.get(id).next;
-            }else {
+            } else {
                 first = historyHashMap.get(id).next;
             }
-            if(!historyHashMap.get(id).equals(last)){
+            if (!historyHashMap.get(id).equals(last)) {
                 historyHashMap.get(id).next.previous = historyHashMap.get(id).previous;
-            }else {
+            } else {
                 last = historyHashMap.get(id).previous;
             }
             historyHashMap.remove(id);
