@@ -14,9 +14,9 @@ import java.util.NoSuchElementException;
 
 public class InMemoryTaskManager implements TaskManager {
     private int id = 0;
-    final private Map<Integer, Task> tasks = new HashMap<>();
-    final private Map<Integer, Epic> epics = new HashMap<>();
-    final private Map<Integer, Subtask> subtasks = new HashMap<>();
+    private final  Map<Integer, Task> tasks = new HashMap<>();
+    private final Map<Integer, Epic> epics = new HashMap<>();
+    private final Map<Integer, Subtask> subtasks = new HashMap<>();
     private final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
