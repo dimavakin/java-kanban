@@ -14,9 +14,9 @@ import java.util.NoSuchElementException;
 
 public class InMemoryTaskManager implements TaskManager {
     private int id = 0;
-    private Map<Integer, Task> tasks = new HashMap<>();
-    private Map<Integer, Epic> epics = new HashMap<>();
-    private Map<Integer, Subtask> subtasks = new HashMap<>();
+    final private Map<Integer, Task> tasks = new HashMap<>();
+    final private Map<Integer, Epic> epics = new HashMap<>();
+    final private Map<Integer, Subtask> subtasks = new HashMap<>();
     private final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
@@ -71,7 +71,7 @@ public class InMemoryTaskManager implements TaskManager {
             return tasks.get(id);
         } else if (epics.containsKey(id)) {
             return epics.get(id);
-        } else if (epics.containsKey(id)) {
+        } else if (subtasks.containsKey(id)) {
             return subtasks.get(id);
         } else {
             throw new NoSuchElementException("Задача с таким id найдена");

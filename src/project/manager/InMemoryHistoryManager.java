@@ -19,7 +19,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public void add(Task task) {
-        if (last == null) {
+        if (last == null && first == null) {
             Node node = new Node();
             node.values = task;
             first = node;
@@ -32,9 +32,14 @@ public class InMemoryHistoryManager implements HistoryManager {
             historyHashMap.get(last.values.getId()).next = node;
             last = node;
             historyHashMap.put(task.getId(), node);
-        } else {
-            historyHashMap.get(task.getId()).previous.next = historyHashMap.get(task.getId()).next;
+        } else if (historyHashMap.get(task.getId()) != last) {
+            if (historyHashMap.get(task.getId()).previous != null) {
+                historyHashMap.get(task.getId()).previous.next = historyHashMap.get(task.getId()).next;
+            } else {
+                first = historyHashMap.get(task.getId()).next;
+            }
             historyHashMap.get(task.getId()).next.previous = historyHashMap.get(task.getId()).previous;
+            historyHashMap.get(last.values.getId()).next = historyHashMap.get(task.getId());
             historyHashMap.get(task.getId()).previous = last;
             last = historyHashMap.get(task.getId());
             historyHashMap.get(task.getId()).next = null;
