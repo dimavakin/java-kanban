@@ -57,3 +57,14 @@ d
 4test/project/manager/InMemoryHistoryManagerTest.java,8\9\896a4abb8b55c0d38fdda8251ad96b3da3ea4e15
 ?
 java-kanban.iml,d\f\df5dcbbd3f931c7c23855ccec11732ab4c8544f2
+^
+.src/project/manager/FileBackedTaskManager.java,f\0\f0ea9f30e36589f7ff91ed98084d892882529cf9
+8
+data.csv,1\a\1aa5784d52481911bc44df0e8b6a8fd581b0518c
+_
+/src/project/exception/ManagerSaveException.java,e\0\e04e2eaa998f2ceaea87c2bef0e4ae10a08e7988
+c
+3test/project/manager/FileBackedTaskManagerTest.java,d\e\dec511d09dff0ed9870c1a764eb1599bfb920173
+:
+
+.gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302

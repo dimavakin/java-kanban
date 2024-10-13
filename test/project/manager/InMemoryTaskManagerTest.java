@@ -2,6 +2,7 @@ package project.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import project.exception.ManagerSaveException;
 import project.status.Status;
 import project.task.Epic;
 import project.task.Subtask;
@@ -16,14 +17,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class InMemoryTaskManagerTest {
 
     private TaskManager taskManager;
+    private HistoryManager historyManager;
 
     @BeforeEach
     void BeforeEach() {
-        taskManager = new InMemoryTaskManager();
+        historyManager = new InMemoryHistoryManager();
+        taskManager = new InMemoryTaskManager(historyManager);
     }
 
     @Test
-    void testAddNewTaskTest() {
+    void testAddNewTaskTest() throws ManagerSaveException {
         Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW);
         final int taskId = taskManager.getId();
         taskManager.createTask(task);
@@ -41,7 +44,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testAddNewEpicTest() {
+    void testAddNewEpicTest() throws ManagerSaveException {
         Epic epic = new Epic(taskManager.getId(), "Test addNewEpic", "Test addNewEpic description");
         final int epicId = taskManager.getId();
         taskManager.createEpic(epic);
@@ -59,7 +62,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testAddNewSubtask() {
+    void testAddNewSubtask() throws ManagerSaveException {
         Epic epic = new Epic(taskManager.getId(), "Test addNewEpic", "Test addNewEpic description");
         taskManager.createEpic(epic);
 
@@ -80,7 +83,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testSubtaskOwnEpic() {
+    void testSubtaskOwnEpic() throws ManagerSaveException {
         Subtask subtask = new Subtask(0, "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, 0);
         taskManager.createSubtask(subtask);
 
@@ -96,7 +99,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testAddingAndFindingTasksById() {
+    public void testAddingAndFindingTasksById() throws ManagerSaveException {
         Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW);
         taskManager.createTask(task);
 
@@ -113,7 +116,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testGeneratedAndExplicitIdsDoNotConflict() {
+    public void testGeneratedAndExplicitIdsDoNotConflict() throws ManagerSaveException {
         Task explicitIdTask = new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW);
 
         Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW);
