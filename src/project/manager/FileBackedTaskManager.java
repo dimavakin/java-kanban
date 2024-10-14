@@ -38,7 +38,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             }
 
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка при сохранении данных в файл ", e);
         }
     }
 
@@ -75,11 +75,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                         Subtask subtask = new Subtask(id, name, description, Status.valueOf(status), epicId);
                         taskManager.createSubtask(subtask);
                         break;
+
+                    default:
+                        throw new ManagerSaveException("Неизвестный тип задачи: " + type);
                 }
             }
 
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка при загрузке данных из файла ", e);
         }
         return taskManager;
     }
