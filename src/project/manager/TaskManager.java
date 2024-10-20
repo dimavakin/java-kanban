@@ -1,5 +1,6 @@
 package project.manager;
 
+import project.exception.ManagerSaveException;
 import project.task.Epic;
 import project.task.Subtask;
 import project.task.Task;
@@ -14,19 +15,21 @@ public interface TaskManager {
 
     Map<Integer, Subtask> getSubtasks();
 
-    void deleteAll();
+    void deleteAll() throws ManagerSaveException;
 
     Task getTaskById(int id);
 
-    void createTask(Task task);
+    List<Task> getAllTasks();
 
-    void createEpic(Epic epic);
+    void createTask(Task task) throws ManagerSaveException;
 
-    void createSubtask(Subtask subtask);
+    void createEpic(Epic epic) throws ManagerSaveException;
 
-    void updateTask(int id, Task task);
+    void createSubtask(Subtask subtask) throws ManagerSaveException;
 
-    void deleteTaskById(int id);
+    void updateTask(int id, Task task) throws ManagerSaveException;
+
+    void deleteTaskById(int id) throws ManagerSaveException;
 
     List<Subtask> getSubtasksByEpicId(int id);
 

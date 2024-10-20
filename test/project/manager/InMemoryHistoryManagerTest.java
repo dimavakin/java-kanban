@@ -2,6 +2,7 @@ package project.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import project.exception.ManagerSaveException;
 import project.status.Status;
 import project.task.Task;
 
@@ -29,8 +30,8 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testHistoryManagerPreservesPreviousVersionOfTask() {
-        TaskManager taskManager = new InMemoryTaskManager();
+    void testHistoryManagerPreservesPreviousVersionOfTask() throws ManagerSaveException {
+        TaskManager taskManager = new InMemoryTaskManager(historyManager);
         Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW);
         taskManager.createTask(task);
 
@@ -47,13 +48,13 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testGetDefaultHistoryManagerReturnsInitializedInstance() {
+    void testGetDefaultHistoryManagerReturnsInitializedInstance() {
         HistoryManager historyManager = Managers.getDefaultHistory();
         assertNotNull(historyManager);
     }
 
     @Test
-    public void testRemoveTaskFromMiddle() {
+    void testRemoveTaskFromMiddle() {
         historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
         historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
         historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));
@@ -68,7 +69,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testRemoveFirstTask() {
+    void testRemoveFirstTask() {
         historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
         historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
         historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));
@@ -83,7 +84,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testAddAndReAddTask() {
+    void testAddAndReAddTask() {
         Task task1 = new Task(1, "Test Task 1", "Description 1", Status.NEW);
         Task task2 = new Task(2, "Test Task 2", "Description 2", Status.NEW);
 
@@ -99,7 +100,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testRemoveLastTask() {
+    void testRemoveLastTask() {
         historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
         historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
         historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));

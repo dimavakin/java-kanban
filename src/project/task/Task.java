@@ -24,6 +24,14 @@ public class Task {
         status = Status.NEW;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     public int getId() {
         return id;
     }
@@ -38,12 +46,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "tasks.Task{" +
-                "id=" + id +
-                ", project.status=" + status +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+        return id + "," + "TASK" + "," + name + "," + status + "," + description;
     }
 
     @Override
