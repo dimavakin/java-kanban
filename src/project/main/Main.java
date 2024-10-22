@@ -40,8 +40,6 @@ public class Main {
         Subtask subtask7 = new Subtask(taskManager.getId(), "Надеть кроссовки", "Нужно надеть кроссовки", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2024, 10, 26, 15, 30), 3);
         taskManager.createSubtask(subtask7);
 
-
-
         taskManager.updateTask(0, new Task(0, "Поставить чайник 2", "Нужно поставить чайник в 17:00 2", Status.DONE, Duration.ofDays(1), LocalDateTime.now()));
 
         taskManager.deleteTaskById(1);
@@ -53,7 +51,6 @@ public class Main {
         System.out.println("Эпики: " + taskManager.getEpics());
         System.out.println();
         System.out.println("Подзадачи: " + taskManager.getSubtasks());
-        System.out.println(Duration.ofDays(6)+"                       "+ LocalDateTime.now());
-        System.out.println("Отсортированные задачи " +taskManager.getPrioritizedTasks());
+        System.out.println("Отсортированные задачи " + taskManager.getPrioritizedTasks());
     }
 }
