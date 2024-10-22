@@ -3,31 +3,35 @@ package project.manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import project.exception.ManagerSaveException;
+import project.exception.TimeConflictException;
 import project.status.Status;
 import project.task.Epic;
 import project.task.Subtask;
 import project.task.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryTaskManagerTest {
 
-    private TaskManager taskManager;
-    private HistoryManager historyManager;
+    private InMemoryTaskManager taskManager;
 
     @BeforeEach
     void BeforeEach() {
-        historyManager = new InMemoryHistoryManager();
+        HistoryManager historyManager = new InMemoryHistoryManager();
         taskManager = new InMemoryTaskManager(historyManager);
     }
 
     @Test
-    void testAddNewTaskTest() throws ManagerSaveException {
-        Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW);
+    void testAddNewTaskTest() throws ManagerSaveException, TimeConflictException {
+        Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
         final int taskId = taskManager.getId();
         taskManager.createTask(task);
 
@@ -62,11 +66,11 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testAddNewSubtask() throws ManagerSaveException {
+    void testAddNewSubtask() throws ManagerSaveException, TimeConflictException {
         Epic epic = new Epic(taskManager.getId(), "Test addNewEpic", "Test addNewEpic description");
         taskManager.createEpic(epic);
 
-        Subtask subtask = new Subtask(taskManager.getId(), "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, 0);
+        Subtask subtask = new Subtask(taskManager.getId(), "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30), 0);
         final int subtaskId = taskManager.getId();
         taskManager.createSubtask(subtask);
 
@@ -83,8 +87,8 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testSubtaskOwnEpic() throws ManagerSaveException {
-        Subtask subtask = new Subtask(0, "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, 0);
+    void testSubtaskOwnEpic() throws ManagerSaveException, TimeConflictException {
+        Subtask subtask = new Subtask(0, "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 11, 23, 15, 30), 0);
         taskManager.createSubtask(subtask);
 
         final Task savedSubtask = taskManager.getSubtask(0);
@@ -93,21 +97,21 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testGetDefaultTaskManagerReturnsInitializedInstance() {
+    void testGetDefaultTaskManagerReturnsInitializedInstance() {
         TaskManager taskManager = Managers.getDefault();
         assertNotNull(taskManager);
     }
 
     @Test
-    public void testAddingAndFindingTasksById() throws ManagerSaveException {
-        Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW);
+    void testAddingAndFindingTasksById() throws ManagerSaveException, TimeConflictException {
+        Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
         taskManager.createTask(task);
 
         Epic epic = new Epic(taskManager.getId(), "Test addNewEpic", "Test addNewEpic description");
         final int epicId = taskManager.getId();
         taskManager.createEpic(epic);
 
-        Subtask subtask = new Subtask(taskManager.getId(), "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, epicId);
+        Subtask subtask = new Subtask(taskManager.getId(), "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2026, 10, 23, 15, 30), epicId);
         taskManager.createSubtask(subtask);
 
         assertEquals(task, taskManager.getTask(0), "Задача не найдена");
@@ -116,13 +120,33 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testGeneratedAndExplicitIdsDoNotConflict() throws ManagerSaveException {
-        Task explicitIdTask = new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW);
+    void testGeneratedAndExplicitIdsDoNotConflict() throws ManagerSaveException, TimeConflictException {
+        Task explicitIdTask = new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
 
-        Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW);
+        Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2026, 10, 23, 15, 30));
         taskManager.createTask(task);
 
         assertEquals(explicitIdTask, taskManager.getTask(0), "Задачи с сгенерированным id и с заданым id не совпадают");
+    }
+
+    @Test
+    void shouldDetectTimeConflict() throws ManagerSaveException, TimeConflictException {
+        Task task1 = new Task(1, "Task 1", "Description", Status.NEW, Duration.ofHours(2), LocalDateTime.of(2024, 10, 22, 10, 0));
+        Task task2 = new Task(2, "Task 2", "Description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2024, 10, 22, 11, 0));
+
+        taskManager.createTask(task1);
+
+        assertTrue(taskManager.hasTimeConflict(task2), "Должно быть пересечение по времени между задачами.");
+    }
+
+    @Test
+    void shouldNotDetectTimeConflict() throws ManagerSaveException, TimeConflictException {
+        Task task1 = new Task(1, "Task 1", "Description", Status.NEW, Duration.ofHours(2), LocalDateTime.of(2024, 10, 22, 10, 0));
+        Task task2 = new Task(2, "Task 2", "Description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2024, 10, 22, 13, 0));
+
+        taskManager.createTask(task1);
+
+        assertFalse(taskManager.hasTimeConflict(task2), "Не должно быть пересечения по времени между задачами.");
     }
 
 

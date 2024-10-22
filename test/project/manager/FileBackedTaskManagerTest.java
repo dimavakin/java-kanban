@@ -31,10 +31,10 @@ class FileBackedTaskManagerTest {
         File tempFile = File.createTempFile("test", ".csv");
         tempFile.deleteOnExit();
         try (FileWriter writer = new FileWriter(tempFile)) {
-            writer.write("id,type,name,status,description,epic\n");
-            writer.write("1,TASK,Task 1,NEW,Task description\n");
-            writer.write("2,EPIC,Epic 1,NEW,Epic description\n");
-            writer.write("3,SUBTASK,Subtask 1,NEW,Subtask description,2\n");
+            writer.write("id,type,name,status,description,epic,PT24H,2024-10-22T21:21:37.385698\n");
+            writer.write("1,TASK,Task 1,NEW,Task description,PT24H,2024-11-22T21:21:37.385698\n");
+            writer.write("2,EPIC,Epic 1,NEW,Epic description,PT24H,2024-11-25T21:21:37.385698\n");
+            writer.write("3,SUBTASK,Subtask 1,NEW,Subtask description,PT24H,2024-11-25T21:21:37.385698,2\n");
         }
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);

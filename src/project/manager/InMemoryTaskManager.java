@@ -1,7 +1,8 @@
 package project.manager;
 
+import project.comparator.TaskComparator;
 import project.exception.ManagerSaveException;
-import project.status.Status;
+import project.exception.TimeConflictException;
 import project.task.Epic;
 import project.task.Subtask;
 import project.task.Task;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.TreeSet;
 
 
 public class InMemoryTaskManager implements TaskManager {
@@ -18,6 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
+    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(new TaskComparator());
     private final HistoryManager historyManager;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -79,10 +82,20 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    public TreeSet<Task> getPrioritizedTasks() {
+        return new TreeSet<>(prioritizedTasks);
+    }
+
     @Override
-    public void createTask(Task task) throws ManagerSaveException {
-        tasks.put(task.getId(), task);
-        id++;
+    public void createTask(Task task) throws ManagerSaveException, TimeConflictException {
+        if (!hasTimeConflict(task)) {
+            tasks.put(task.getId(), task);
+            prioritizedTasks.add(task);
+            id++;
+        } else {
+            throw new TimeConflictException("Новая задача " + task + " пересекается с существующими задачами.");
+        }
+
     }
 
     @Override
@@ -92,12 +105,20 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask) throws ManagerSaveException {
+    public void createSubtask(Subtask subtask) throws ManagerSaveException, TimeConflictException {
         if (epics.containsKey(subtask.getEpicID())) {
-            epics.get(subtask.getEpicID()).addToSubtasksIds(subtask.getId());
-            subtasks.put(subtask.getId(), subtask);
-            id++;
+            if (!hasTimeConflict(subtask)) {
+                epics.get(subtask.getEpicID()).addToSubtasks(subtask);
+                epics.get(subtask.getEpicID()).changeStatus();
+                epics.get(subtask.getEpicID()).recalculateTimes();
+                subtasks.put(subtask.getId(), subtask);
+                prioritizedTasks.add(subtask);
+                id++;
+            } else {
+                throw new TimeConflictException("Новая задача " + subtask + " пересекается с существующими задачами.");
+            }
         }
+
     }
 
     @Override
@@ -106,20 +127,31 @@ public class InMemoryTaskManager implements TaskManager {
             tasks.put(id, task);
         } else if (epics.containsKey(id)) {
             epics.put(id, (Epic) task);
+            epics.get(id).recalculateTimes();
         } else if (subtasks.containsKey(id)) {
             subtasks.put(id, (Subtask) task);
-            changeEpicStatus(epics.get(subtasks.get(id).getEpicID()));
+            epics.get(subtasks.get(id).getEpicID()).changeStatus();
+            epics.get(subtasks.get(id).getEpicID()).recalculateTimes();
         }
     }
 
     @Override
     public void deleteTaskById(int id) throws ManagerSaveException {
         tasks.remove(id);
-        subtasks.remove(id);
+        if (subtasks.containsKey(id)) {
+            int idForEpic = subtasks.get(id).getEpicID();
+            subtasks.remove(id);
+            epics.get(idForEpic).recalculateTimes();
+        }
         if (epics.containsKey(id)) {
-            for (int subtaskId : epics.get(id).getSubtaskIds()) {
-                deleteTaskById(subtaskId);
-            }
+            epics.get(id).getSubtasks()
+                    .forEach(subtask -> {
+                        try {
+                            deleteTaskById(subtask.getId());
+                        } catch (ManagerSaveException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
             epics.remove(id);
         }
     }
@@ -127,11 +159,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getSubtasksByEpicId(int id) {
         if (epics.containsKey(id)) {
-            List<Subtask> subtaskByEpic = new ArrayList<>();
-            for (int subtaskId : epics.get(id).getSubtaskIds()) {
-                subtaskByEpic.add(subtasks.get(subtaskId));
-            }
-            return subtaskByEpic;
+            return epics.get(id).getSubtasks();
         } else return null;
     }
 
@@ -152,37 +180,8 @@ public class InMemoryTaskManager implements TaskManager {
         return id;
     }
 
-    public void changeEpicStatus(Epic epic) {
-
-        if (epic.getSubtaskIds().isEmpty()) {
-            epics.get(epic.getId()).setStatus(Status.NEW);
-
-        } else {
-            int statusNew = 0;
-            int statusDone = 0;
-            int statusInProgress = 0;
-            for (int id : epic.getSubtaskIds()) {
-                switch (subtasks.get(id).getStatus()) {
-                    case NEW:
-                        statusNew++;
-                        break;
-                    case DONE:
-                        statusDone++;
-                        break;
-                    case IN_PROGRESS:
-                        statusInProgress++;
-                        break;
-                }
-            }
-            if (statusNew == 0 && statusInProgress == 0) {
-                epics.get(epic.getId()).setStatus(Status.DONE);
-            } else if (statusInProgress == 0 && statusDone == 0) {
-
-                epics.get(epic.getId()).setStatus(Status.NEW);
-            } else {
-                epics.get(epic.getId()).setStatus(Status.IN_PROGRESS);
-            }
-        }
+    public boolean hasTimeConflict(Task newTask) {
+        return prioritizedTasks.stream()
+                .anyMatch(existingTask -> newTask.getStartTime().isBefore(existingTask.getEndTime()) && newTask.getEndTime().isAfter(existingTask.getStartTime()));
     }
-
 }

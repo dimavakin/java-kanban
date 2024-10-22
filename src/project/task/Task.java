@@ -2,19 +2,25 @@ package project.task;
 
 import project.status.Status;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-    private int id;
+    private final int id;
     private Status status;
-    private String name;
-    private String description;
+    private final String name;
+    private final String description;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
-    public Task(int id, String name, String description, Status status) {
+    public Task(int id, String name, String description, Status status, Duration duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.id = id;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public Task(int id, String name, String description) {
@@ -36,6 +42,18 @@ public class Task {
         return id;
     }
 
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
     public Status getStatus() {
         return status;
     }
@@ -46,7 +64,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return id + "," + "TASK" + "," + name + "," + status + "," + description;
+        return id + "," + "TASK" + "," + name + "," + status + "," + description + "," + duration + "," + startTime;
     }
 
     @Override
