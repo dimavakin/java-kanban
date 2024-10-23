@@ -1,6 +1,7 @@
 package project.manager;
 
 import project.exception.ManagerSaveException;
+import project.exception.TimeConflictException;
 import project.status.Status;
 import project.task.Epic;
 import project.task.Subtask;
@@ -12,6 +13,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
@@ -22,7 +25,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     public void save() throws ManagerSaveException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("data.csv"))) {
-            bw.write("id,type,name,status,description,epic\n");
+            bw.write("id,type,name,status,description,duration,startTime,epic\n");
 
             List<Task> tasks = super.getAllTasks();
             for (Task task : tasks) {
@@ -42,7 +45,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         }
     }
 
-    public static FileBackedTaskManager loadFromFile(File file) throws ManagerSaveException {
+    public static FileBackedTaskManager loadFromFile(File file) throws ManagerSaveException, TimeConflictException {
         FileBackedTaskManager taskManager = new FileBackedTaskManager(new InMemoryHistoryManager());
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -58,10 +61,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 String name = fields[2];
                 String status = fields[3];
                 String description = fields[4];
+                String duration = fields[5];
+                String startTime = fields[6];
 
                 switch (type) {
                     case "TASK":
-                        Task task = new Task(id, name, description, Status.valueOf(status));
+                        Task task = new Task(id, name, description, Status.valueOf(status), Duration.parse(duration), LocalDateTime.parse(startTime));
                         taskManager.createTask(task);
                         break;
 
@@ -71,8 +76,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                         break;
 
                     case "SUBTASK":
-                        int epicId = Integer.parseInt(fields[5]);
-                        Subtask subtask = new Subtask(id, name, description, Status.valueOf(status), epicId);
+                        int epicId = Integer.parseInt(fields[7]);
+                        Subtask subtask = new Subtask(id, name, description, Status.valueOf(status), Duration.parse(duration), LocalDateTime.parse(startTime), epicId);
                         taskManager.createSubtask(subtask);
                         break;
 
@@ -88,7 +93,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public void createTask(Task task) throws ManagerSaveException {
+    public void createTask(Task task) throws ManagerSaveException, TimeConflictException {
         super.createTask(task);
         save();
     }
@@ -100,7 +105,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public void createSubtask(Subtask subtask) throws ManagerSaveException {
+    public void createSubtask(Subtask subtask) throws ManagerSaveException, TimeConflictException {
         super.createSubtask(subtask);
         save();
     }

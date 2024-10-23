@@ -1,6 +1,7 @@
 package project.manager;
 
 import project.exception.ManagerSaveException;
+import project.exception.TimeConflictException;
 import project.task.Epic;
 import project.task.Subtask;
 import project.task.Task;
@@ -21,11 +22,11 @@ public interface TaskManager {
 
     List<Task> getAllTasks();
 
-    void createTask(Task task) throws ManagerSaveException;
+    void createTask(Task task) throws ManagerSaveException, TimeConflictException;
 
     void createEpic(Epic epic) throws ManagerSaveException;
 
-    void createSubtask(Subtask subtask) throws ManagerSaveException;
+    void createSubtask(Subtask subtask) throws ManagerSaveException, TimeConflictException;
 
     void updateTask(int id, Task task) throws ManagerSaveException;
 

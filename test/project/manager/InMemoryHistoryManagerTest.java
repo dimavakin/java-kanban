@@ -3,9 +3,12 @@ package project.manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import project.exception.ManagerSaveException;
+import project.exception.TimeConflictException;
 import project.status.Status;
 import project.task.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,7 +21,7 @@ class InMemoryHistoryManagerTest {
     @BeforeEach
     void BeforeEach() {
         historyManager = new InMemoryHistoryManager();
-        task = new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW);
+        task = new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
     }
 
     @Test
@@ -30,14 +33,14 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void testHistoryManagerPreservesPreviousVersionOfTask() throws ManagerSaveException {
+    void testHistoryManagerPreservesPreviousVersionOfTask() throws ManagerSaveException, TimeConflictException {
         TaskManager taskManager = new InMemoryTaskManager(historyManager);
-        Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW);
+        Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2026, 10, 23, 15, 30));
         taskManager.createTask(task);
 
         historyManager.add(task);
 
-        taskManager.updateTask(0, new Task(0, "Test addTask", "Test addTask description", Status.DONE));
+        taskManager.updateTask(0, new Task(0, "Test addTask", "Test addTask description", Status.DONE, Duration.ofHours(1), LocalDateTime.of(2027, 10, 23, 15, 30)));
 
         List<Task> history = historyManager.getHistory();
         assertEquals(1, history.size(), "Задача не добавилась в историю");
@@ -55,38 +58,38 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void testRemoveTaskFromMiddle() {
-        historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
-        historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
-        historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));
+        historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30)));
+        historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2026, 10, 23, 15, 30)));
+        historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2027, 10, 23, 15, 30)));
 
         historyManager.remove(1);
         final List<Task> history = historyManager.getHistory();
 
         assertEquals(2, history.size(), "История не обновилась.");
-        assertEquals(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW), history.get(0), "Первый элемент в истории не совпадает.");
-        assertEquals(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW), history.get(1), "Третий элемент в истории не совпадает.");
+        assertEquals(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2029, 10, 23, 15, 30)), history.get(0), "Первый элемент в истории не совпадает.");
+        assertEquals(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2030, 10, 23, 15, 30)), history.get(1), "Третий элемент в истории не совпадает.");
 
     }
 
     @Test
     void testRemoveFirstTask() {
-        historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
-        historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
-        historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));
+        historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30)));
+        historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2026, 10, 23, 15, 30)));
+        historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2027, 10, 23, 15, 30)));
 
         historyManager.remove(0);
         final List<Task> history = historyManager.getHistory();
 
         assertEquals(2, history.size(), "История не обновилась.");
-        assertEquals(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW), history.get(0), "Первый элемент в истории не совпадает.");
-        assertEquals(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW), history.get(1), "Третий элемент в истории не совпадает.");
+        assertEquals(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2028, 10, 23, 15, 30)), history.get(0), "Первый элемент в истории не совпадает.");
+        assertEquals(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2029, 10, 23, 15, 30)), history.get(1), "Третий элемент в истории не совпадает.");
 
     }
 
     @Test
     void testAddAndReAddTask() {
-        Task task1 = new Task(1, "Test Task 1", "Description 1", Status.NEW);
-        Task task2 = new Task(2, "Test Task 2", "Description 2", Status.NEW);
+        Task task1 = new Task(1, "Test Task 1", "Description 1", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
+        Task task2 = new Task(2, "Test Task 2", "Description 2", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2026, 10, 23, 15, 30));
 
         historyManager.add(task1);
         historyManager.add(task2);
@@ -101,16 +104,16 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void testRemoveLastTask() {
-        historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW));
-        historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW));
-        historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW));
+        historyManager.add(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30)));
+        historyManager.add(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2026, 10, 23, 15, 30)));
+        historyManager.add(new Task(2, "Test addThirdTask", "Test addThirdTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2027, 10, 23, 15, 30)));
 
         historyManager.remove(2);
         final List<Task> history = historyManager.getHistory();
 
         assertEquals(2, history.size(), "История не обновилась.");
-        assertEquals(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW), history.get(0), "Первый элемент в истории не совпадает.");
-        assertEquals(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW), history.get(1), "Третий элемент в истории не совпадает.");
+        assertEquals(new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2028, 10, 23, 15, 30)), history.get(0), "Первый элемент в истории не совпадает.");
+        assertEquals(new Task(1, "Test addSecondTask", "Test addSecondTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2029, 10, 23, 15, 30)), history.get(1), "Третий элемент в истории не совпадает.");
 
     }
 }

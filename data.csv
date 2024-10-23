@@ -1,4 +1,4 @@
-id,type,name,status,description,epic
-1,TASK,Task 1,NEW,Task description
-2,EPIC,Epic 1,NEW,Epic description
-3,SUBTASK,Subtask 1,NEW,Subtask description,2
+id,type,name,status,description,duration,startTime,epic
+1,TASK,Task 1,NEW,Task description,PT24H,2024-11-22T21:21:37.385698
+2,EPIC,Epic 1,NEW,Epic description,PT24H,2024-11-25T21:21:37.385698
+3,SUBTASK,Subtask 1,NEW,Subtask description,PT24H,2024-11-25T21:21:37.385698,2
