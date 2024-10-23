@@ -182,6 +182,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     public boolean hasTimeConflict(Task newTask) {
         return prioritizedTasks.stream()
+                .filter(existingTask -> existingTask.getStartTime() != null && existingTask.getEndTime() != null)
                 .anyMatch(existingTask -> newTask.getStartTime().isBefore(existingTask.getEndTime()) && newTask.getEndTime().isAfter(existingTask.getStartTime()));
     }
 }

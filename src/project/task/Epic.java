@@ -26,19 +26,23 @@ public class Epic extends Task {
     }
 
     public void recalculateTimes() {
-        if (subtasks.isEmpty()) {
+        List<Subtask> subtasksWithTime = subtasks.stream()
+                .filter(subtask -> subtask.getStartTime() != null)
+                .toList();
+
+        if (subtasksWithTime.isEmpty()) {
             this.duration = Duration.ZERO;
             this.startTime = null;
             this.endTime = null;
         } else {
-            this.duration = subtasks.stream()
+            this.duration = subtasksWithTime.stream()
                     .map(Subtask::getDuration)
                     .reduce(Duration.ZERO, Duration::plus);
-            this.startTime = subtasks.stream()
+            this.startTime = subtasksWithTime.stream()
                     .map(Subtask::getStartTime)
                     .min(LocalDateTime::compareTo)
                     .orElse(null);
-            this.endTime = subtasks.stream()
+            this.endTime = subtasksWithTime.stream()
                     .map(Subtask::getEndTime)
                     .max(LocalDateTime::compareTo)
                     .orElse(null);
