@@ -59,9 +59,9 @@ class EpicsHandler extends BaseHttpHandler implements HttpHandler {
             sendText(exchange, response, 200);
         } else if (splitPath.length == 3) {
             try {
-                int EpicId = Integer.parseInt(splitPath[2]);
+                int epicId = Integer.parseInt(splitPath[2]);
 
-                Task epic = taskManager.getEpic(EpicId);
+                Task epic = taskManager.getEpic(epicId);
 
                 String response = gson.toJson(epic);
                 sendText(exchange, response, 200);
