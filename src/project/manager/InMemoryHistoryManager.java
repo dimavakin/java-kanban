@@ -63,7 +63,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    public void deleteHistory(){
+    public void deleteHistory() {
         historyHashMap.clear();
     }
 
