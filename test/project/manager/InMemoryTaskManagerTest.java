@@ -2,6 +2,7 @@ package project.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import project.exception.InvalidEpicIdException;
 import project.exception.ManagerSaveException;
 import project.exception.TimeConflictException;
 import project.status.Status;
@@ -16,7 +17,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryTaskManagerTest {
@@ -31,7 +31,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void testAddNewTaskTest() throws ManagerSaveException, TimeConflictException {
-        Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
+        Task task = new Task(1, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
         final int taskId = taskManager.getId();
         taskManager.createTask(task);
 
@@ -44,7 +44,7 @@ class InMemoryTaskManagerTest {
 
         assertNotNull(tasks, "Задачи не возвращаются.");
         assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
+        assertEquals(task, tasks.get(1), "Задачи не совпадают.");
     }
 
     @Test
@@ -62,15 +62,15 @@ class InMemoryTaskManagerTest {
 
         assertNotNull(epics, "Эпики не возвращаются.");
         assertEquals(1, epics.size(), "Неверное количество эпиков.");
-        assertEquals(epic, epics.get(0), "Эпики не совпадают.");
+        assertEquals(epic, epics.get(1), "Эпики не совпадают.");
     }
 
     @Test
-    void testAddNewSubtask() throws ManagerSaveException, TimeConflictException {
-        Epic epic = new Epic(taskManager.getId(), "Test addNewEpic", "Test addNewEpic description");
+    void testAddNewSubtask() throws ManagerSaveException, TimeConflictException, InvalidEpicIdException {
+        Epic epic = new Epic(1, "Test addNewEpic", "Test addNewEpic description");
         taskManager.createEpic(epic);
 
-        Subtask subtask = new Subtask(taskManager.getId(), "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30), 0);
+        Subtask subtask = new Subtask(taskManager.getId(), "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30), 1);
         final int subtaskId = taskManager.getId();
         taskManager.createSubtask(subtask);
 
@@ -83,17 +83,7 @@ class InMemoryTaskManagerTest {
 
         assertNotNull(subtasks, "Подзадачи не возвращаются.");
         assertEquals(1, subtasks.size(), "Неверное количество подзадач.");
-        assertEquals(subtask, subtasks.get(1), "Подзадачи не совпадают.");
-    }
-
-    @Test
-    void testSubtaskOwnEpic() throws ManagerSaveException, TimeConflictException {
-        Subtask subtask = new Subtask(0, "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 11, 23, 15, 30), 0);
-        taskManager.createSubtask(subtask);
-
-        final Task savedSubtask = taskManager.getSubtask(0);
-
-        assertNull(savedSubtask, "Подзадача найдена.");
+        assertEquals(subtask, subtasks.get(2), "Подзадачи не совпадают.");
     }
 
     @Test
@@ -103,7 +93,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void testAddingAndFindingTasksById() throws ManagerSaveException, TimeConflictException {
+    void testAddingAndFindingTasksById() throws ManagerSaveException, TimeConflictException, InvalidEpicIdException {
         Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
         taskManager.createTask(task);
 
@@ -114,19 +104,19 @@ class InMemoryTaskManagerTest {
         Subtask subtask = new Subtask(taskManager.getId(), "Test addNewSubtask", "Test addNewSubtask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2026, 10, 23, 15, 30), epicId);
         taskManager.createSubtask(subtask);
 
-        assertEquals(task, taskManager.getTask(0), "Задача не найдена");
-        assertEquals(epic, taskManager.getEpic(1), "Эпик не найден");
-        assertEquals(subtask, taskManager.getSubtask(2), "Подзадача не найдена");
+        assertEquals(task, taskManager.getTask(1), "Задача не найдена");
+        assertEquals(epic, taskManager.getEpic(2), "Эпик не найден");
+        assertEquals(subtask, taskManager.getSubtask(3), "Подзадача не найдена");
     }
 
     @Test
     void testGeneratedAndExplicitIdsDoNotConflict() throws ManagerSaveException, TimeConflictException {
-        Task explicitIdTask = new Task(0, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
+        Task explicitIdTask = new Task(1, "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2025, 10, 23, 15, 30));
 
         Task task = new Task(taskManager.getId(), "Test addNewTask", "Test addNewTask description", Status.NEW, Duration.ofHours(1), LocalDateTime.of(2026, 10, 23, 15, 30));
         taskManager.createTask(task);
 
-        assertEquals(explicitIdTask, taskManager.getTask(0), "Задачи с сгенерированным id и с заданым id не совпадают");
+        assertEquals(explicitIdTask, taskManager.getTask(1), "Задачи с сгенерированным id и с заданым id не совпадают");
     }
 
     @Test

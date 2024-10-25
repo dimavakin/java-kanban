@@ -1,5 +1,6 @@
 package project.manager;
 
+import project.exception.InvalidEpicIdException;
 import project.exception.ManagerSaveException;
 import project.exception.TimeConflictException;
 import project.status.Status;
@@ -45,7 +46,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         }
     }
 
-    public static FileBackedTaskManager loadFromFile(File file) throws ManagerSaveException, TimeConflictException {
+    public static FileBackedTaskManager loadFromFile(File file) throws ManagerSaveException, TimeConflictException, InvalidEpicIdException {
         FileBackedTaskManager taskManager = new FileBackedTaskManager(new InMemoryHistoryManager());
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -105,7 +106,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public void createSubtask(Subtask subtask) throws ManagerSaveException, TimeConflictException {
+    public void createSubtask(Subtask subtask) throws ManagerSaveException, TimeConflictException, InvalidEpicIdException {
         super.createSubtask(subtask);
         save();
     }

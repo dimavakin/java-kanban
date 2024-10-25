@@ -1,0 +1,6 @@
+
+	java:S112«"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8Ø™Ô¥¬2J$1df0e875-c92b-46fe-9e2b-17a1e94a07ce
+
+java:S3824’"IReplace this "Map.containsKey()" with a call to "Map.computeIfPresent()".(¨˜¸—8ƒšÔ¥¬2J$d7629d15-3df1-4b7f-b1b3-91b326fd194f
+o
+java:S1168½"+Return an empty collection instead of null.(ÎÍëÍ8’‡Å§¬2J$bbbb6729-b4fd-489e-85b5-5fad9b13b2c1
