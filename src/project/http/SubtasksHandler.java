@@ -18,7 +18,7 @@ class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
     private final Gson gson;
 
-    public SubtasksHandler(TaskManager taskManager,Gson gson) {
+    public SubtasksHandler(TaskManager taskManager, Gson gson) {
         this.taskManager = taskManager;
         this.gson = gson;
     }
@@ -76,7 +76,7 @@ class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handlePost(HttpExchange exchange) throws IOException, ManagerSaveException , InvalidEpicIdException {
+    private void handlePost(HttpExchange exchange) throws IOException, ManagerSaveException, InvalidEpicIdException {
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         Subtask subtask = gson.fromJson(body, Subtask.class);
 
