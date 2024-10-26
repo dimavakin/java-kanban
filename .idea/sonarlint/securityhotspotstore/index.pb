@@ -76,8 +76,6 @@ T
 $src/project/http/HttpTaskServer.java,8\b\8b4f1683e973a55e01754617f73feda45907e479
 U
 %src/project/http/BaseHttpHandler.java,4\2\4289d721d0dbe69d73322ff7254c43d3a5a16ddf
-Q
-!src/project/http/TaskHandler.java,b\d\bdbaa1b7418a88958bb509b990119cb42fe47c85
 R
 "src/project/http/TasksHandler.java,5\1\5185569bbaa3787a467314cefc1426b95eb80191
 U
@@ -88,10 +86,6 @@ R
 "src/project/http/EpicsHandler.java,9\9\996b659f288215f310e20a78c980ba2b756b93fb
 T
 $src/project/http/HistoryHandler.java,d\c\dc9d8d0ccb218d5be70e2e376f2b94b24e1b21b7
-X
-(src/project/http/PrioritizedHandler.java,a\0\a0718a9aaec625dfc786afd8f030a6f63838690e
-\
-,src/project/http/PrioritizedTaskHandler.java,c\c\cc9af7afa87d67eabb2b9a0ca94ccdc5cd8b784f
 ]
 -src/project/http/PrioritizedTasksHandler.java,4\6\4652caf7100bb943d3fad93a7f8b1253304663ab
 Y

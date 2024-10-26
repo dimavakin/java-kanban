@@ -28,26 +28,24 @@ class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
 
-        switch (method) {
-            case "GET":
-                handleGet(exchange, path);
-                break;
-            case "POST":
-                try {
+        try {
+            switch (method) {
+                case "GET":
+                    handleGet(exchange, path);
+                    break;
+                case "POST":
                     handlePost(exchange);
-                } catch (ManagerSaveException | InvalidEpicIdException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            case "DELETE":
-                try {
+                    break;
+                case "DELETE":
                     handleDelete(exchange, path);
-                } catch (ManagerSaveException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            default:
-                sendNotFound(exchange);
+                    break;
+                default:
+                    sendNotFound(exchange);
+            }
+        } catch (ManagerSaveException e) {
+            sendText(exchange, "Ошибка при сохранении данных.", 500);
+        } catch (Exception e) {
+            sendText(exchange, "Произошла ошибка сервера: " + e.getMessage(), 500);
         }
     }
 
@@ -104,7 +102,7 @@ class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         if (splitPath.length == 3) {
             int taskId = Integer.parseInt(splitPath[2]);
             taskManager.deleteTaskById(taskId);
-            sendText(exchange, "Подзадача успешно удалена.", 201);
+            sendText(exchange, "Подзадача успешно удалена.", 200);
         } else {
             sendNotFound(exchange);
         }

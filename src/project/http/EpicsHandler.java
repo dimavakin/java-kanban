@@ -27,26 +27,24 @@ class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
 
-        switch (method) {
-            case "GET":
-                handleGet(exchange, path);
-                break;
-            case "POST":
-                try {
+        try {
+            switch (method) {
+                case "GET":
+                    handleGet(exchange, path);
+                    break;
+                case "POST":
                     handlePost(exchange);
-                } catch (ManagerSaveException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            case "DELETE":
-                try {
+                    break;
+                case "DELETE":
                     handleDelete(exchange, path);
-                } catch (ManagerSaveException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            default:
-                sendNotFound(exchange);
+                    break;
+                default:
+                    sendNotFound(exchange);
+            }
+        } catch (ManagerSaveException e) {
+            sendText(exchange, "Ошибка при сохранении данных.", 500);
+        } catch (Exception e) {
+            sendText(exchange, "Произошла ошибка сервера: " + e.getMessage(), 500);
         }
     }
 
@@ -105,7 +103,7 @@ class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         if (splitPath.length == 3) {
             int epicId = Integer.parseInt(splitPath[2]);
             taskManager.deleteTaskById(epicId);
-            sendText(exchange, "Эпик успешно удален.", 201);
+            sendText(exchange, "Эпик успешно удален.", 200);
         } else {
             sendNotFound(exchange);
         }

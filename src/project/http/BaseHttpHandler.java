@@ -21,4 +21,5 @@ public class BaseHttpHandler {
     protected void sendHasInteractions(HttpExchange h) throws IOException {
         sendText(h, "Задача пересекается с существующими задачами.", 406);
     }
+
 }
