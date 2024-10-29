@@ -1,6 +1,7 @@
 package project.manager;
 
 import project.comparator.TaskComparator;
+import project.exception.InvalidEpicIdException;
 import project.exception.ManagerSaveException;
 import project.exception.TimeConflictException;
 import project.task.Epic;
@@ -16,7 +17,7 @@ import java.util.TreeSet;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    private int id = 0;
+    private int id = 1;
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
@@ -72,14 +73,25 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         if (tasks.containsKey(id)) {
+            historyManager.add(tasks.get(id));
             return tasks.get(id);
         } else if (epics.containsKey(id)) {
+            historyManager.add(epics.get(id));
             return epics.get(id);
         } else if (subtasks.containsKey(id)) {
+            historyManager.add(subtasks.get(id));
             return subtasks.get(id);
         } else {
             throw new NoSuchElementException("Задача с таким id найдена");
         }
+    }
+
+    public boolean hasTask(int id) {
+        if (tasks.containsKey(id)) {
+            return true;
+        } else if (epics.containsKey(id)) {
+            return true;
+        } else return subtasks.containsKey(id);
     }
 
     public TreeSet<Task> getPrioritizedTasks() {
@@ -105,7 +117,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask) throws ManagerSaveException, TimeConflictException {
+    public void createSubtask(Subtask subtask) throws ManagerSaveException, TimeConflictException, InvalidEpicIdException {
         if (epics.containsKey(subtask.getEpicID())) {
             if (!hasTimeConflict(subtask)) {
                 epics.get(subtask.getEpicID()).addToSubtasks(subtask);
@@ -117,6 +129,9 @@ public class InMemoryTaskManager implements TaskManager {
             } else {
                 throw new TimeConflictException("Новая задача " + subtask + " пересекается с существующими задачами.");
             }
+
+        } else {
+            throw new InvalidEpicIdException("Эпик с ID " + subtask.getEpicID() + " не найден.");
         }
 
     }
@@ -133,6 +148,10 @@ public class InMemoryTaskManager implements TaskManager {
             epics.get(subtasks.get(id).getEpicID()).changeStatus();
             epics.get(subtasks.get(id).getEpicID()).recalculateTimes();
         }
+    }
+
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
     }
 
     @Override
@@ -154,6 +173,13 @@ public class InMemoryTaskManager implements TaskManager {
                     });
             epics.remove(id);
         }
+    }
+
+    public void deleteAllTasks() {
+        historyManager.deleteHistory();
+        tasks.clear();
+        subtasks.clear();
+        epics.clear();
     }
 
     @Override

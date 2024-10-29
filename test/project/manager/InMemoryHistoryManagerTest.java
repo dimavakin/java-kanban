@@ -40,13 +40,13 @@ class InMemoryHistoryManagerTest {
 
         historyManager.add(task);
 
-        taskManager.updateTask(0, new Task(0, "Test addTask", "Test addTask description", Status.DONE, Duration.ofHours(1), LocalDateTime.of(2027, 10, 23, 15, 30)));
+        taskManager.updateTask(1, new Task(0, "Test addTask", "Test addTask description", Status.DONE, Duration.ofHours(1), LocalDateTime.of(2027, 10, 23, 15, 30)));
 
         List<Task> history = historyManager.getHistory();
         assertEquals(1, history.size(), "Задача не добавилась в историю");
 
         Task taskInHistory = history.get(0);
-        assertEquals(0, taskInHistory.getId(), "id в истории и добавленной задачи не совпадают");
+        assertEquals(1, taskInHistory.getId(), "id в истории и добавленной задачи не совпадают");
         assertEquals(Status.NEW, taskInHistory.getStatus(), "Статус задачи добавленной в историю изменился после обновления");
     }
 

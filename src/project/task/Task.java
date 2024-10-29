@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-    private final int id;
+    private int id;
     private Status status;
     private final String name;
     private final String description;
@@ -40,6 +40,10 @@ public class Task {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LocalDateTime getEndTime() {
